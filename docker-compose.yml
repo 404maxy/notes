@@ -26,6 +26,8 @@ services:
   mysql:
     container_name: notes_mysql
     image: mysql:latest
+    ports:
+      - 3306:3306
     volumes:
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db:/var/lib/mysql
