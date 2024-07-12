@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%notes}}`.
+ * Handles the creation of table `{{%note}}`.
  */
-class m240711_204626_create_notes_table extends Migration
+class m240711_204626_create_note_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function up()
     {
-        $this->createTable('{{%notes}}', [
+        $this->createTable('{{%note}}', [
             'id' => $this->primaryKey(),
             'user_id' => $this->integer()->notNull(),
             'title' => $this->string(),
@@ -21,14 +21,14 @@ class m240711_204626_create_notes_table extends Migration
 
         $this->createIndex(
             'idx-post-user_id',
-            '{{%notes}}',
+            '{{%note}}',
             'user_id'
         );
 
         //TODO: можно отказаться от внешнего ключа, если требуется сохранение записей удаленных пользователей
         $this->addForeignKey(
-            'fk-notes-user_id',
-            '{{%notes}}',
+            'fk-note-user_id',
+            '{{%note}}',
             'user_id',
             'user',
             'id',
@@ -36,8 +36,6 @@ class m240711_204626_create_notes_table extends Migration
         );
 
         //TODO: для поиска потребуется полнотекстовый индекс
-
-        //TODO: добавить посев фикстурных данных
     }
 
     /**
@@ -46,16 +44,16 @@ class m240711_204626_create_notes_table extends Migration
     public function down()
     {
         $this->dropForeignKey(
-            'fk-notes-user_id',
-            '{{%notes}}'
+            'fk-note-user_id',
+            '{{%note}}'
         );
 
         // drops index for column `author_id`
         $this->dropIndex(
             'idx-post-user_id',
-            '{{%notes}}'
+            '{{%note}}'
         );
 
-        $this->dropTable('{{%notes}}');
+        $this->dropTable('{{%note}}');
     }
 }
