@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\Note;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -75,7 +76,15 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+//        if (Yii::$app->user->isGuest) {
+//            return $this->actionLogin();
+//        }
+
+        $notes = Note::findAll(['user_id' => 1, 'is_deleted' => false]);
+
+        return $this->render('index', [
+            'notes' => $notes
+        ]);
     }
 
     /**

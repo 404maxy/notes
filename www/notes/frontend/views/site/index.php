@@ -10,9 +10,7 @@ $this->title = 'Заметки';
             <div class="col-md-4">
                 <button class="btn btn-primary w-100">Добавить заметку</button>
                 <ul class="list-group pt-1">
-                  <?php foreach ($content->notes as $note)  { ?>
-                  <li class="list-group-item"><a href="<?= $note->id ?>"><?= $note->title ?></a></li>
-                  <?php } ?>
+                  <li class="list-group-item"><a href="1">Название заметки</a></li>
                 </ul>
             </div>
             <div class="col-md-8">
