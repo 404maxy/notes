@@ -17,6 +17,9 @@ class m240711_204626_create_note_table extends Migration
             'user_id' => $this->integer()->notNull(),
             'title' => $this->string(),
             'body' => $this->text(), //TODO: можно будет вынести в отдельную таблицу на движке Sphinx для полнотекстового поиска
+            'created_at' => $this->dateTime()->notNull(),
+            'updated_at' => $this->dateTime()->notNull(),
+            'is_deleted' => $this->boolean()->defaultValue(false),
         ]);
 
         $this->createIndex(
