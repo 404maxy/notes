@@ -118,9 +118,35 @@ class NoteController extends Controller
      *
      * @param int $id
      * @return array
-     * @throws NotFoundHttpException
+     * @throws Exception
      */
     public function actionUpdate(int $id)
+    {
+        $userId = Yii::$app->user->id;
+        $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
+
+        $postData = Yii::$app->request->post();
+
+        $note->title = $postData['title'];
+        $note->body = $postData['body'];
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!$note->save()) {
+            return ['status' => 'error', 'message' => 'Ошибка в ходе сохранения заметки', 'errors' => $note->errors];
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => $note];
+    }
+
+    /**
+     * Редактирование новой заметки
+     *
+     * @param int $id
+     * @return array
+     * @throws NotFoundHttpException
+     */
+    public function actionDelete(int $id)
     {
         $userId = Yii::$app->user->id;
 

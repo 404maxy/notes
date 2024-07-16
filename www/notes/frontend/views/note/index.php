@@ -23,16 +23,16 @@ $this->title = 'Заметки';
 
         <div id="note">
 
-          <h2 id="header">Заметки</h2>
+          <h2 id="title">Заметки</h2>
           <div id="body">Сервис для управления своими заметками.</div>
 
           <div class="pt-3">
             <div class="row">
               <div class="col">
-                <button class="btn btn-primary float-start">Редактировать</button>
+                <button class="btn btn-primary float-start" id="edit-button">Редактировать</button>
               </div>
               <div class="col">
-                <button class="btn btn-danger float-end">Удалить</button>
+                <button class="btn btn-danger float-end" id="delete-button">Удалить</button>
               </div>
             </div>
           </div>
@@ -41,14 +41,14 @@ $this->title = 'Заметки';
 
         <form action="/note/create" method="post" id="form" class="d-none">
           <div class="mb-3">
-            <label for="title" class="form-label">Заголовок</label>
-            <input type="text" name="title" class="form-control" id="title" placeholder="Новая заметка">
+            <label for="form-title" class="form-label">Заголовок</label>
+            <input type="text" name="title" class="form-control" id="form-title" placeholder="Новая заметка">
             <!--TODO: вывести поле с текстом ошибки -->
           </div>
 
           <div class="mb-3">
-            <label for="body" class="form-label">Текст</label>
-            <textarea class="form-control" name="body" id="body" rows="3"
+            <label for="form-body" class="form-label">Текст</label>
+            <textarea class="form-control" name="body" id="form-body" rows="3"
                       placeholder="В этот прекрасный день..."></textarea>
             <!--TODO: вывести поле с текстом ошибки -->
           </div>

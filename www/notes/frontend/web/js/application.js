@@ -12,14 +12,19 @@
         this.notes = $('#notes-list');
         this.form = $('#form');
         this.note = $('#note');
-        this.header = $('#header');
+        this.title = $('#title');
         this.body = $('#body');
+        this.formTitle = $('#form-title');
+        this.formBody = $('#form-body');
 
         this.currentId = 0;
 
         this.endpoints = {
             "list": "/note/list",
-            "view": '/note/view/'
+            "view": "/note/view/",
+            "create": "/note/create",
+            "delete": "/note/delete/",
+            "update": "/note/update/"
         };
 
         /**
@@ -80,7 +85,8 @@
                 type: 'get',
                 success: function (response) {
                     if (response.status === 'success') {
-                        this.set(response.data.id, response.data.title, response.data.body)
+                        this.currentId = response.data.id;
+                        this.set(response.data.id, response.data.title, response.data.body);
                     } else {
                         alert(response.message);
                         console.log(response.errors);
@@ -99,9 +105,10 @@
          * @param body
          */
         this.set = function (id, title, body) {
-            this.currentId = id;
-            this.header.text(title);
+            this.title.text(title);
             this.body.text(body);
+            this.formTitle.val(title);
+            this.formBody.text(body);
             window.history.pushState({"html": body, "pageTitle": title}, "", "#" + id);
         };
 
@@ -131,6 +138,34 @@
             });
         };
 
+        /**
+         * Удаление заметки
+         * @param id
+         */
+        this.delete = function(id)
+        {
+            $.ajax({
+                url: this.endpoints.delete,
+                type: 'post',
+                data: this.form.serialize(),
+                success: function (response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        this.form[0].reset();
+                        this.set(response.data.id, response.data.title, response.data.body);
+                        this.hideForm();
+                        this.getAll();
+                    } else {
+                        alert(response.message);
+                        console.log(response.errors);
+                    }
+                }.bind(this),
+                error: function () {
+                    alert('Ошибка в ходе создания заметки. Обратитесь в поддержку.');
+                }
+            });
+        }
+
     }
 
     window.notes = new Notes();
@@ -146,6 +181,7 @@
      */
     $(document).ready(function () {
         $('#add-form-button').click(function () {
+            notes.form.attr('action', notes.endpoints.create);
             notes.showForm();
         });
 
@@ -166,6 +202,18 @@
             $('#notes-list>li').removeClass('active');
             $(this).addClass('active');
         });
+
+        $('#edit-button').click(function(e)
+        {
+            notes.form.attr('action', notes.endpoints.update + notes.currentId);
+            notes.showForm();
+        });
+
+        $('#delete-button').click(function(e)
+        {
+            notes.delete();
+        });
+
     });
 
 })();
