@@ -11,6 +11,7 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    'defaultRoute' => 'note',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
@@ -36,14 +37,13 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'note/view/<id:\d+>' => 'note/view',
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
