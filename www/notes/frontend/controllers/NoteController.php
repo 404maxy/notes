@@ -3,7 +3,9 @@
 namespace frontend\controllers;
 
 use common\models\Note;
+use yii\web\Response;
 use Yii;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
@@ -52,7 +54,8 @@ class NoteController extends Controller
         }
 
         return $this->render('index', [
-            'notes' => $notes
+            'notes' => $notes,
+            'note' => new Note
         ]);
     }
 
@@ -79,52 +82,47 @@ class NoteController extends Controller
     }
 
     /**
-     * Отображение формы добавления новой заметки
-     *
-     * @return mixed
-     */
-    public function actionAdd()
-    {
-        echo 'Add Form';
-        exit;
-    }
-
-    /**
      * Добавление новой заметки
      *
-     * @return mixed
+     * @return array
+     * @throws Exception
      */
     public function actionCreate()
     {
-        $userId = Yii::$app->user->id;
+        $postData = Yii::$app->request->post();
 
-        echo 'Create Action';
-        exit;
-    }
+        $note = new Note();
+        $note->user_id = Yii::$app->user->id;
+        $note->title = $postData['title'];
+        $note->body = $postData['body'];
+        $note->is_deleted = false;
 
-    /**
-     * Отображение формы редактирования заметки
-     *
-     * @return mixed
-     */
-    public function actionEdit()
-    {
-        $userId = Yii::$app->user->id;
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
-        echo 'Edit Action';
-        exit;
+        if (!$note->save()) {
+            return ['status' => 'error', 'message' => 'Ошибка в ходе добавлении заметки', 'errors' => $note->errors];
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно добавлена.', 'data' => $note];
     }
 
     /**
      * Редактирование новой заметки
      *
-     * @return mixed
+     * @param int $id
+     * @return array
+     * @throws NotFoundHttpException
      */
     public function actionUpdate(int $id)
     {
         $userId = Yii::$app->user->id;
 
-        echo 'Update Action';
-        exit;
+        $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
+
+        if ($note === null) {
+            throw new NotFoundHttpException('Такой заметки не существует');
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => $note];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
@@ -25,14 +26,26 @@ class Note extends ActiveRecord
         return '{{%note}}';
     }
 
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['title', 'body'], 'required'],
-            [['title', 'body'], 'string'],
+            [['title', 'body'], 'required', 'message' => 'Пожалуйста заполните поле.'],
+            [['title', 'body'], 'string', 'message' => 'Поле может быть только строкой.'],
         ];
     }
 
