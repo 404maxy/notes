@@ -41,27 +41,15 @@ class NoteController extends Controller
      * Отображение списка заметок
      *
      * @return mixed
-     * @throws NotFoundHttpException
      */
     public function actionIndex()
     {
-        $userId = Yii::$app->user->id;
-
-        $notes = Note::findAll(['user_id' => $userId, 'is_deleted' => false]);
-
-        if ($notes === null) {
-            throw new NotFoundHttpException('Еще не создано ни одной записи.');
-        }
-
-        return $this->render('index', [
-            'notes' => $notes,
-            'note' => new Note
-        ]);
+        return $this->render('index');
     }
 
     /**
      * Отображение списка заметок
-     *
+     * TODO: тело заметок тут получать не нужно
      * @return array
      */
     public function actionList()
@@ -91,13 +79,13 @@ class NoteController extends Controller
 
         $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
 
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         if ($note === null) {
-            throw new NotFoundHttpException('Такой заметки не существует');
+            return ['status' => 'error', 'message' => 'Заметки не существует'];
         }
 
-        return $this->render('view', [
-            'note' => $note,
-        ]);
+        return ['status' => 'success', 'message' => 'Заметка успешно получена', 'data' => $note];
     }
 
     /**

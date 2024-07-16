@@ -15,6 +15,8 @@
         this.header = $('#header');
         this.body = $('#body');
 
+        this.currentId = 0;
+
         this.endpoints = {
             "list": "/note/list",
             "view": '/note/view/'
@@ -39,14 +41,14 @@
         /**
          * Получить список заметок
          */
-        this.getAll = function() {
+        this.getAll = function () {
             $.ajax({
                 url: this.endpoints.list,
                 type: 'get',
                 success: function (response) {
-                    console.log(response);
                     if (response.status === 'success') {
-                        this.renderList(response.data)
+                        this.renderList(response.data);
+                        //TODO: отправить событие
                     } else {
                         alert(response.message);
                         console.log(response.errors);
@@ -62,11 +64,32 @@
          * Добавить список заметок на страницу
          * @param notes
          */
-        this.renderList = function(notes) {
+        this.renderList = function (notes) {
             this.notes.empty();
-            $.each(notes, function(index, note) {
-                this.notes.append('<li class="list-group-item"><a href="/note/view/' + note.id + '">' + note.title + '</a></li>');
+            $.each(notes, function (index, note) {
+                this.notes.append('<li class="list-group-item" data-id="' + note.id + '">' + note.title + '</li>');
             }.bind(this));
+        };
+
+        /**
+         * Получить данные одной заметки
+         */
+        this.get = function (id) {
+            $.ajax({
+                url: this.endpoints.view + id,
+                type: 'get',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        this.set(response.data.id, response.data.title, response.data.body)
+                    } else {
+                        alert(response.message);
+                        console.log(response.errors);
+                    }
+                }.bind(this),
+                error: function () {
+                    alert('Ошибка в ходе получения заметки. Обратитесь в поддержку.');
+                }
+            });
         };
 
         /**
@@ -76,9 +99,10 @@
          * @param body
          */
         this.set = function (id, title, body) {
+            this.currentId = id;
             this.header.text(title);
             this.body.text(body);
-            window.history.pushState({"html":body,"pageTitle":title},"", "note/view/" + id);
+            window.history.pushState({"html": body, "pageTitle": title}, "", "#" + id);
         };
 
         /**
@@ -111,22 +135,37 @@
 
     window.notes = new Notes();
     notes.getAll();
+    let id = parseInt(window.location.hash.substring(1));
+    notes.currentId = id > 0 ? id : 0;
+    notes.get(notes.currentId);
+
+    //TODO: получать идентификатор последней заметки при загрузке без переданного идентификатора заметки
 
     /**
      * Регистрация событий
      */
-    $('#add-form-button').click(function () {
-        notes.showForm();
-    });
+    $(document).ready(function () {
+        $('#add-form-button').click(function () {
+            notes.showForm();
+        });
 
-    $('#cancel-button').click(function (e) {
-        e.preventDefault();
-        notes.hideForm();
-    });
+        $('#cancel-button').click(function (e) {
+            e.preventDefault();
+            notes.hideForm();
+        });
 
-    $('#form').submit(function (e) {
-        e.preventDefault();
-        notes.create();
+        $('#form').submit(function (e) {
+            e.preventDefault();
+            notes.create();
+        });
+
+        $('#notes-list').on('click', 'li', function (e) {
+            e.preventDefault();
+            notes.get($(this).data('id'));
+            notes.hideForm();
+            $('#notes-list>li').removeClass('active');
+            $(this).addClass('active');
+        });
     });
 
 })();

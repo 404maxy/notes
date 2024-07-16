@@ -3,9 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-/* @var $notes common\models\Note[] */
-/* @var $note common\models\Note */
-
 $this->title = 'Заметки';
 ?>
 
@@ -17,21 +14,17 @@ $this->title = 'Заметки';
 
       <div class="col-md-4">
         <button class="btn btn-success w-100" id="add-form-button">Добавить заметку</button>
-        <ul id="notes-list" class="list-group pt-1"></ul>
+        <ul id="notes-list" class="list-group pt-1">
+          <li class="list-group-item">Идёт загрузка списка заметок...</li>
+        </ul>
       </div>
 
       <div class="col-md-8">
 
         <div id="note">
 
-          <h2 id="header">Название заметки</h2>
-          <div id="body">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-            labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-            ea
-            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-            nulla pariatur.
-          </div>
+          <h2 id="header">Заметки</h2>
+          <div id="body">Сервис для управления своими заметками.</div>
 
           <div class="pt-3">
             <div class="row">
@@ -46,16 +39,18 @@ $this->title = 'Заметки';
 
         </div>
 
-        <form action="note/create" method="post" id="form" class="d-none">
+        <form action="/note/create" method="post" id="form" class="d-none">
           <div class="mb-3">
             <label for="title" class="form-label">Заголовок</label>
             <input type="text" name="title" class="form-control" id="title" placeholder="Новая заметка">
+            <!--TODO: вывести поле с текстом ошибки -->
           </div>
 
           <div class="mb-3">
             <label for="body" class="form-label">Текст</label>
             <textarea class="form-control" name="body" id="body" rows="3"
                       placeholder="В этот прекрасный день..."></textarea>
+            <!--TODO: вывести поле с текстом ошибки -->
           </div>
 
           <div class="pt-3">
