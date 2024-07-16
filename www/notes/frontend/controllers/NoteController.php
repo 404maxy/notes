@@ -60,6 +60,25 @@ class NoteController extends Controller
     }
 
     /**
+     * Отображение списка заметок
+     *
+     * @return array
+     */
+    public function actionList()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $userId = Yii::$app->user->id;
+
+        $notes = Note::find()
+            ->where(['user_id' => $userId, 'is_deleted' => false])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+
+        return ['status' => 'success', 'message' => 'Список заметок успешно получен.', 'data' => $notes ?? []];
+    }
+
+    /**
      * Отображение одной заметки
      *
      * @param int $id

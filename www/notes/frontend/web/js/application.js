@@ -9,10 +9,16 @@
      */
     function Notes() {
 
+        this.notes = $('#notes-list');
         this.form = $('#form');
         this.note = $('#note');
         this.header = $('#header');
         this.body = $('#body');
+
+        this.endpoints = {
+            "list": "/note/list",
+            "view": '/note/view/'
+        };
 
         /**
          * Отобразить форму добавления/изменения заметки
@@ -31,7 +37,41 @@
         };
 
         /**
+         * Получить список заметок
+         */
+        this.getAll = function() {
+            $.ajax({
+                url: this.endpoints.list,
+                type: 'get',
+                success: function (response) {
+                    console.log(response);
+                    if (response.status === 'success') {
+                        this.renderList(response.data)
+                    } else {
+                        alert(response.message);
+                        console.log(response.errors);
+                    }
+                }.bind(this),
+                error: function () {
+                    alert('Ошибка в ходе получения списка заметок. Обратитесь в поддержку.');
+                }
+            });
+        };
+
+        /**
+         * Добавить список заметок на страницу
+         * @param notes
+         */
+        this.renderList = function(notes) {
+            this.notes.empty();
+            $.each(notes, function(index, note) {
+                this.notes.append('<li class="list-group-item"><a href="/note/view/' + note.id + '">' + note.title + '</a></li>');
+            }.bind(this));
+        };
+
+        /**
          * Установить данные заметки
+         * @param id
          * @param title
          * @param body
          */
@@ -55,8 +95,7 @@
                         this.form[0].reset();
                         this.set(response.data.id, response.data.title, response.data.body);
                         this.hideForm();
-                        //TODO: установить URL
-
+                        this.getAll();
                     } else {
                         alert(response.message);
                         console.log(response.errors);
@@ -71,6 +110,7 @@
     }
 
     window.notes = new Notes();
+    notes.getAll();
 
     /**
      * Регистрация событий

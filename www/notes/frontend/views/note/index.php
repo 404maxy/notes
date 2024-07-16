@@ -17,11 +17,7 @@ $this->title = 'Заметки';
 
       <div class="col-md-4">
         <button class="btn btn-success w-100" id="add-form-button">Добавить заметку</button>
-        <ul class="list-group pt-1">
-            <?php foreach ($notes as $note): ?>
-              <li class="list-group-item"><?= Html::a(Html::encode($note->title), ['view', 'id' => $note->id]) ?></li>
-            <?php endforeach; ?>
-        </ul>
+        <ul id="notes-list" class="list-group pt-1"></ul>
       </div>
 
       <div class="col-md-8">
