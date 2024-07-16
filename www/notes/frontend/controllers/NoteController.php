@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Note;
+use yii\db\StaleObjectException;
 use yii\web\Response;
 use Yii;
 use yii\db\Exception;
@@ -71,12 +72,10 @@ class NoteController extends Controller
      *
      * @param int $id
      * @return mixed
-     * @throws NotFoundHttpException
      */
     public function actionView(int $id)
     {
         $userId = Yii::$app->user->id;
-
         $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
 
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -114,7 +113,7 @@ class NoteController extends Controller
     }
 
     /**
-     * Редактирование новой заметки
+     * Редактирование заметки
      *
      * @param int $id
      * @return array
@@ -140,22 +139,26 @@ class NoteController extends Controller
     }
 
     /**
-     * Редактирование новой заметки
+     * Удаление заметки
      *
      * @param int $id
      * @return array
-     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws StaleObjectException
      */
     public function actionDelete(int $id)
     {
         $userId = Yii::$app->user->id;
-
         $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
 
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         if ($note === null) {
-            throw new NotFoundHttpException('Такой заметки не существует');
+            return ['status' => 'error', 'message' => 'Такой заметки не существует'];
         }
 
-        return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => $note];
+        $note->delete();
+
+        return ['status' => 'success', 'message' => 'Заметка успешно удалена.'];
     }
 }

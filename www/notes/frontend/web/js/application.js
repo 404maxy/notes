@@ -145,15 +145,11 @@
         this.delete = function(id)
         {
             $.ajax({
-                url: this.endpoints.delete,
+                url: this.endpoints.delete + this.currentId,
                 type: 'post',
-                data: this.form.serialize(),
                 success: function (response) {
                     if (response.status === 'success') {
                         alert(response.message);
-                        this.form[0].reset();
-                        this.set(response.data.id, response.data.title, response.data.body);
-                        this.hideForm();
                         this.getAll();
                     } else {
                         alert(response.message);
@@ -211,7 +207,8 @@
 
         $('#delete-button').click(function(e)
         {
-            notes.delete();
+            notes.delete(notes.currentId);
+            //TODO: получить последнюю созданную заметку
         });
 
     });
