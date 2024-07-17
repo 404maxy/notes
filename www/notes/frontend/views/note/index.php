@@ -1,7 +1,9 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use frontend\assets\AppAsset;
+use frontend\assets\NoteAsset;
+AppAsset::register($this);
+NoteAsset::register($this);
 
 $this->title = 'Заметки';
 ?>
