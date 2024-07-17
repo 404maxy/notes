@@ -16,14 +16,14 @@ use yii\db\ActiveRecord;
  * @property integer $updated_at
  * @property bool $is_deleted
  */
-class Note extends ActiveRecord
+class Tag extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return '{{%note}}';
+        return '{{%tag}}';
     }
 
     public function behaviors()
@@ -44,8 +44,8 @@ class Note extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'body'], 'required', 'message' => 'Пожалуйста заполните поле.'],
-            [['title', 'body'], 'string', 'message' => 'Поле может быть только строкой.'],
+            [['name'], 'required', 'message' => 'Пожалуйста заполните поле.'],
+            [['name'], 'string', 'max' => 40, 'message' => 'Поле может быть только строкой до 40 символов.'],
         ];
     }
 
@@ -54,9 +54,9 @@ class Note extends ActiveRecord
      * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getTags()
+    public function getNotes()
     {
-        return $this->hasMany(Tag::class, ['id' => 'tag_id'])
-            ->viaTable('note_tag', ['note_id' => 'id']);
+        return $this->hasMany(Note::class, ['id' => 'note_id'])
+            ->viaTable('note_tag', ['tag_id' => 'id']);
     }
 }
