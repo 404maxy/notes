@@ -148,6 +148,13 @@
             e.preventDefault();
             $('#tags-list>li').removeClass('active');
             $(this).addClass('active');
+            notes.getAll(function(notesList) {
+                if(typeof notesList[0] !== 'undefined' && typeof notesList[0].id !== 'undefined') {
+                    notes.get(notesList[0].id);
+                } else {
+                    notes.notes.empty();
+                }
+            }, $(this).data('id'));
         });
 
         $('#tags-list').on('click', 'li>button', function()

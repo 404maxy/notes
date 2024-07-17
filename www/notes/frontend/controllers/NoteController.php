@@ -59,11 +59,20 @@ class NoteController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $userId = Yii::$app->user->id;
+        $getData = Yii::$app->request->get();
 
-        $notes = Note::find()
+        $notesCondition = Note::find()
             ->where(['user_id' => $userId, 'is_deleted' => false])
-            ->orderBy(['created_at' => SORT_DESC])
-            ->all();
+            ->orderBy(['created_at' => SORT_DESC]);
+
+        if(isset($getData['tagId']))
+        {
+            $tagId = (int)$getData['tagId'];
+            $notesCondition->joinWith('tags')
+                ->where(['tag.id' => $tagId]);
+        }
+
+        $notes = $notesCondition->all();
 
         return ['status' => 'success', 'message' => 'Список заметок успешно получен.', 'data' => $notes ?? []];
     }

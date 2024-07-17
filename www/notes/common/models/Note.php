@@ -70,4 +70,16 @@ class Note extends ActiveRecord
         return $this->getTags()->select('name')->column();
     }
 
+    /**
+     * @param $tagId
+     * @return array|ActiveRecord[]
+     */
+    public static function findByTagName($tagId)
+    {
+        return self::find()
+            ->joinWith('tags')
+            ->where(['tag.id' => $tagId])
+            ->all();
+    }
+
 }

@@ -48,9 +48,15 @@
         /**
          * Получить список заметок
          */
-        this.getAll = function (callback) {
+        this.getAll = function (callback, tagId) {
+
+            let url = this.endpoints.list;
+            if(typeof tagId !== 'undefined') {
+                url = url + '/?tagId=' + tagId;
+            }
+
             $.ajax({
-                url: this.endpoints.list,
+                url: url,
                 type: 'get',
                 success: function (response) {
                     if (response.status === 'success') {
