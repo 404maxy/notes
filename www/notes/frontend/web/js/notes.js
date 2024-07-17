@@ -114,6 +114,7 @@
             this.body.text(body);
             this.formTitle.val(title);
             this.formBody.text(body);
+
             window.history.pushState({"html": body, "pageTitle": title}, "", "#" + id);
         };
 
@@ -125,6 +126,13 @@
             this.noteTags.empty();
             $.each(tags, function (index, tag) {
                 this.noteTags.append('<span class="badge text-bg-primary rounded-pill">' + tag + '</span>');
+            }.bind(this));
+
+            $.each(this.select.find('option'), function (index, tag) {
+                $(tag).attr('selected', false);
+                if(tags.indexOf( $(tag).text() ) !== -1) {
+                    $(tag).attr('selected', 'selected');
+                }
             }.bind(this));
         };
 
@@ -193,6 +201,7 @@
     });
 
     let id = parseInt(window.location.hash.substring(1));
+
     if(!isNaN(id)) {
         notes.get(id);
     } else {

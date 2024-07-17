@@ -70,7 +70,6 @@
         this.renderSelect = function (tags) {
             this.select.empty();
             $.each(tags, function (index, tag) {
-                //TODO: проверить на содержание в notes.tags, если присутствует - отметить как выбранное
                 this.select.append('<option value="'+ tag.id + '">' + tag.name + '</option>');
             }.bind(this));
         };
