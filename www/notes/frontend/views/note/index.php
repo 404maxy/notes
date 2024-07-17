@@ -13,10 +13,19 @@ $this->title = 'Заметки';
     <div class="row">
 
       <div class="col-md-2">
-        <button class="btn btn-success w-100" id="add-tag-button">Добавить тэг</button>
+
+        <form action="/tag/create" method="post" id="tags-form">
+          <div class="input-group mb-3">
+            <input type="text" name="name" class="form-control" placeholder="Новый тэг" aria-describedby="button-addon2">
+            <button class="btn btn-outline-primary" type="button" id="button-addon2">+</button>
+            <!--TODO: вывести поле с текстом ошибки -->
+          </div>
+        </form>
+
         <ul id="tags-list" class="list-group pt-1">
           <li class="list-group-item">Идёт загрузка списка тэгов...</li>
         </ul>
+
       </div>
 
       <div class="col-md-3">

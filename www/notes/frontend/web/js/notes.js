@@ -46,14 +46,16 @@
         /**
          * Получить список заметок
          */
-        this.getAll = function () {
+        this.getAll = function (callback) {
             $.ajax({
                 url: this.endpoints.list,
                 type: 'get',
                 success: function (response) {
                     if (response.status === 'success') {
                         this.renderList(response.data);
-                        //TODO: отправить событие
+                        if(typeof callback === "function") {
+                            callback(response.data);
+                        }
                     } else {
                         alert(response.message);
                         console.log(response.errors);
@@ -150,14 +152,16 @@
                 success: function (response) {
                     if (response.status === 'success') {
                         alert(response.message);
-                        this.getAll();
+                        this.getAll(function(notesList) {
+                            notes.get(notesList[0].id)
+                        });
                     } else {
                         alert(response.message);
                         console.log(response.errors);
                     }
                 }.bind(this),
                 error: function () {
-                    alert('Ошибка в ходе создания заметки. Обратитесь в поддержку.');
+                    alert('Ошибка в ходе удаления заметки. Обратитесь в поддержку.');
                 }
             });
         }
@@ -165,12 +169,13 @@
     }
 
     window.notes = new Notes();
-    notes.getAll();
+    notes.getAll(function(notesList) {
+        notes.get(notesList[0].id)
+    });
+
     let id = parseInt(window.location.hash.substring(1));
     notes.currentId = id > 0 ? id : 0;
     notes.get(notes.currentId);
-
-    //TODO: получать идентификатор последней заметки при загрузке без переданного идентификатора заметки
 
     /**
      * Регистрация событий
@@ -209,7 +214,6 @@
         $('#delete-button').click(function(e)
         {
             notes.delete(notes.currentId);
-            //TODO: получить последнюю созданную заметку
         });
 
     });
