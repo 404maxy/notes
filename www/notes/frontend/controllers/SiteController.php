@@ -2,7 +2,10 @@
 
 namespace frontend\controllers;
 
+use common\models\User;
 use Yii;
+use yii\authclient\AuthAction;
+use yii\authclient\ClientInterface;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -59,7 +62,34 @@ class SiteController extends Controller
                 'class' => \yii\captcha\CaptchaAction::class,
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
+            'auth' => [
+                'class' => AuthAction::class,
+                'successCallback' => [$this, 'oAuthVK'],
+            ],
         ];
+    }
+
+    /**
+     * @param ClientInterface $client
+     * @throws \yii\base\Exception
+     */
+    public function oAuthVK(ClientInterface $client)
+    {
+        $attributes = $client->getUserAttributes();
+
+        $user = User::find()->where(['vk_id' => $attributes['id']])->one();
+
+        if (!$user) {
+            $user = new User();
+            $user->username = $attributes['first_name'] . ' ' . $attributes['last_name'];
+            $user->vk_id = $attributes['id'];
+            $user->auth_key = Yii::$app->security->generateRandomString();
+            $user->email = '';
+            $user->password_hash = '';
+            $user->save();
+        }
+
+        Yii::$app->user->login($user);
     }
 
     /**
