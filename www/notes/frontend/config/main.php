@@ -20,6 +20,7 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
+            'loginUrl' => ['site/login'],
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
@@ -45,6 +46,16 @@ return [
                 'note/update/<id:\d+>' => 'note/update',
                 'note/delete/<id:\d+>' => 'note/delete',
                 'tag/delete/<id:\d+>' => 'tag/delete',
+            ],
+        ],
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'vkontakte' => [
+                    'class' => 'yii\authclient\clients\VKontakte',
+                    'clientId' => '4023084',
+                    'clientSecret' => 'mMNWmecmT33kzObvvbcA',
+                ],
             ],
         ],
     ],
