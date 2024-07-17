@@ -42,6 +42,8 @@ return [
             'showScriptName' => false,
             'rules' => [
                 'note/view/<id:\d+>' => 'note/view',
+                'note/update/<id:\d+>' => 'note/update',
+                'note/delete/<id:\d+>' => 'note/delete',
             ],
         ],
     ],

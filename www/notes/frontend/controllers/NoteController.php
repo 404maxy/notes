@@ -3,7 +3,10 @@
 namespace frontend\controllers;
 
 use common\models\Note;
+use yii\db\StaleObjectException;
+use yii\web\Response;
 use Yii;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
@@ -39,21 +42,29 @@ class NoteController extends Controller
      * Отображение списка заметок
      *
      * @return mixed
-     * @throws NotFoundHttpException
      */
     public function actionIndex()
     {
+        return $this->render('index');
+    }
+
+    /**
+     * Отображение списка заметок
+     * TODO: тело заметок тут получать не нужно
+     * @return array
+     */
+    public function actionList()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $userId = Yii::$app->user->id;
 
-        $notes = Note::findAll(['user_id' => $userId, 'is_deleted' => false]);
+        $notes = Note::find()
+            ->where(['user_id' => $userId, 'is_deleted' => false])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
 
-        if ($notes === null) {
-            throw new NotFoundHttpException('Еще не создано ни одной записи.');
-        }
-
-        return $this->render('index', [
-            'notes' => $notes
-        ]);
+        return ['status' => 'success', 'message' => 'Список заметок успешно получен.', 'data' => $notes ?? []];
     }
 
     /**
@@ -61,70 +72,93 @@ class NoteController extends Controller
      *
      * @param int $id
      * @return mixed
-     * @throws NotFoundHttpException
      */
     public function actionView(int $id)
     {
         $userId = Yii::$app->user->id;
-
         $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
 
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         if ($note === null) {
-            throw new NotFoundHttpException('Такой заметки не существует');
+            return ['status' => 'error', 'message' => 'Заметки не существует'];
         }
 
-        return $this->render('view', [
-            'note' => $note,
-        ]);
-    }
-
-    /**
-     * Отображение формы добавления новой заметки
-     *
-     * @return mixed
-     */
-    public function actionAdd()
-    {
-        echo 'Add Form';
-        exit;
+        return ['status' => 'success', 'message' => 'Заметка успешно получена', 'data' => $note];
     }
 
     /**
      * Добавление новой заметки
      *
-     * @return mixed
+     * @return array
+     * @throws Exception
      */
     public function actionCreate()
     {
-        $userId = Yii::$app->user->id;
+        $postData = Yii::$app->request->post();
 
-        echo 'Create Action';
-        exit;
+        $note = new Note();
+        $note->user_id = Yii::$app->user->id;
+        $note->title = $postData['title'];
+        $note->body = $postData['body'];
+        $note->is_deleted = false;
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!$note->save()) {
+            return ['status' => 'error', 'message' => 'Ошибка в ходе добавлении заметки', 'errors' => $note->errors];
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно добавлена.', 'data' => $note];
     }
 
     /**
-     * Отображение формы редактирования заметки
+     * Редактирование заметки
      *
-     * @return mixed
-     */
-    public function actionEdit()
-    {
-        $userId = Yii::$app->user->id;
-
-        echo 'Edit Action';
-        exit;
-    }
-
-    /**
-     * Редактирование новой заметки
-     *
-     * @return mixed
+     * @param int $id
+     * @return array
+     * @throws Exception
      */
     public function actionUpdate(int $id)
     {
         $userId = Yii::$app->user->id;
+        $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
 
-        echo 'Update Action';
-        exit;
+        $postData = Yii::$app->request->post();
+
+        $note->title = $postData['title'];
+        $note->body = $postData['body'];
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!$note->save()) {
+            return ['status' => 'error', 'message' => 'Ошибка в ходе сохранения заметки', 'errors' => $note->errors];
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => $note];
+    }
+
+    /**
+     * Удаление заметки
+     *
+     * @param int $id
+     * @return array
+     * @throws \Throwable
+     * @throws StaleObjectException
+     */
+    public function actionDelete(int $id)
+    {
+        $userId = Yii::$app->user->id;
+        $note = Note::findOne(['id' => $id, 'user_id' => $userId, 'is_deleted' => false]);
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if ($note === null) {
+            return ['status' => 'error', 'message' => 'Такой заметки не существует'];
+        }
+
+        $note->delete();
+
+        return ['status' => 'success', 'message' => 'Заметка успешно удалена.'];
     }
 }
