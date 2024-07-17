@@ -54,7 +54,10 @@
         this.renderList = function (tags) {
             this.tags.empty();
             $.each(tags, function (index, tag) {
-                this.tags.append('<li class="list-group-item" data-id="' + tag.id + '">' + tag.title + '<button class="float-end btn btn-danger" data-id="' + tag.id + '">x</button></li>');
+                this.tags.append('<li class="list-group-item" data-id="'
+                    + tag.id + '">'
+                    + tag.name
+                    + '<button class="badge text-bg-danger rounded-pill float-end" data-id="' + tag.id + '">&times;</button></li>');
             }.bind(this));
         };
 
@@ -133,7 +136,7 @@
             $(this).addClass('active');
         });
 
-        $('#delete-button').click(function()
+        $('#tags-list').on('click', 'li>button', function()
         {
             tags.delete($(this).data('id'));
         });

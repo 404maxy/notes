@@ -170,12 +170,19 @@
 
     window.notes = new Notes();
     notes.getAll(function(notesList) {
-        notes.get(notesList[0].id)
+        if(typeof notesList[0] !== 'undefined' && typeof notesList[0].id !== 'undefined') {
+            notes.get(id);
+        } else {
+            notes.notes.empty();
+        }
     });
 
     let id = parseInt(window.location.hash.substring(1));
-    notes.currentId = id > 0 ? id : 0;
-    notes.get(notes.currentId);
+    if(!isNaN(id)) {
+        notes.get(id);
+    } else {
+        //$('#controls').hide(); //TODO:
+    }
 
     /**
      * Регистрация событий
