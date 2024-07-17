@@ -16,6 +16,8 @@
         this.body = $('#body');
         this.formTitle = $('#form-title');
         this.formBody = $('#form-body');
+        this.noteTags = $('#note-tags');
+        this.select = $('#tags-select');
 
         this.currentId = 0;
 
@@ -87,8 +89,9 @@
                 type: 'get',
                 success: function (response) {
                     if (response.status === 'success') {
-                        this.currentId = response.data.id;
-                        this.set(response.data.id, response.data.title, response.data.body);
+                        this.currentId = response.data.note.id;
+                        this.set(response.data.note.id, response.data.note.title, response.data.note.body);
+                        this.setTags(response.data.tags);
                     } else {
                         alert(response.message);
                         console.log(response.errors);
@@ -115,6 +118,17 @@
         };
 
         /**
+         * Установить тэги заметки
+         * @param tags
+         */
+        this.setTags = function (tags) {
+            this.noteTags.empty();
+            $.each(tags, function (index, tag) {
+                this.noteTags.append('<span class="badge text-bg-primary rounded-pill">' + tag + '</span>');
+            }.bind(this));
+        };
+
+        /**
          * Добавить заметку
          */
         this.create = function () {
@@ -126,7 +140,8 @@
                     if (response.status === 'success') {
                         alert(response.message);
                         this.form[0].reset();
-                        this.set(response.data.id, response.data.title, response.data.body);
+                        this.set(response.data.note.id, response.data.note.title, response.data.note.body);
+                        this.setTags(response.data.tags);
                         this.hideForm();
                         this.getAll();
                     } else {
@@ -171,7 +186,7 @@
     window.notes = new Notes();
     notes.getAll(function(notesList) {
         if(typeof notesList[0] !== 'undefined' && typeof notesList[0].id !== 'undefined') {
-            notes.get(id);
+            notes.get(notesList[0].id);
         } else {
             notes.notes.empty();
         }
@@ -181,7 +196,7 @@
     if(!isNaN(id)) {
         notes.get(id);
     } else {
-        //$('#controls').hide(); //TODO:
+        //$('#controls').hide(); //TODO: показать преветственный экран
     }
 
     /**

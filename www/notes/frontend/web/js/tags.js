@@ -11,6 +11,7 @@
 
         this.tags = $('#tags-list');
         this.form = $('#tags-form');
+        this.select = $('#tags-select');
 
         this.endpoints = {
             "list": "/tag/list",
@@ -35,6 +36,7 @@
                 success: function (response) {
                     if (response.status === 'success') {
                         this.renderList(response.data);
+                        this.renderSelect(response.data);
                         //TODO: отправить событие
                     } else {
                         alert(response.message);
@@ -58,6 +60,18 @@
                     + tag.id + '">'
                     + tag.name
                     + '<button class="badge text-bg-danger rounded-pill float-end" data-id="' + tag.id + '">&times;</button></li>');
+            }.bind(this));
+        };
+
+        /**
+         * Добавить список тэгов в список множественного выбора
+         * @param tags
+         */
+        this.renderSelect = function (tags) {
+            this.select.empty();
+            $.each(tags, function (index, tag) {
+                //TODO: проверить на содержание в notes.tags, если присутствует - отметить как выбранное
+                this.select.append('<option value="'+ tag.id + '">' + tag.name + '</option>');
             }.bind(this));
         };
 
@@ -99,6 +113,7 @@
                     if (response.status === 'success') {
                         alert(response.message);
                         this.getAll();
+                        //TODO: убрать из $('#note-tags')
                     } else {
                         alert(response.message);
                         console.log(response.errors);
