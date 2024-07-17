@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Note;
+use common\models\Tag;
 use yii\db\StaleObjectException;
 use yii\web\Response;
 use Yii;
@@ -58,11 +59,20 @@ class NoteController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $userId = Yii::$app->user->id;
+        $getData = Yii::$app->request->get();
 
-        $notes = Note::find()
+        $notesCondition = Note::find()
             ->where(['user_id' => $userId, 'is_deleted' => false])
-            ->orderBy(['created_at' => SORT_DESC])
-            ->all();
+            ->orderBy(['created_at' => SORT_DESC]);
+
+        if(isset($getData['tagId']))
+        {
+            $tagId = (int)$getData['tagId'];
+            $notesCondition->joinWith('tags')
+                ->where(['tag.id' => $tagId]);
+        }
+
+        $notes = $notesCondition->all();
 
         return ['status' => 'success', 'message' => 'Список заметок успешно получен.', 'data' => $notes ?? []];
     }
@@ -72,6 +82,7 @@ class NoteController extends Controller
      *
      * @param int $id
      * @return mixed
+     * @throws \yii\base\InvalidConfigException
      */
     public function actionView(int $id)
     {
@@ -84,7 +95,9 @@ class NoteController extends Controller
             return ['status' => 'error', 'message' => 'Заметки не существует'];
         }
 
-        return ['status' => 'success', 'message' => 'Заметка успешно получена', 'data' => $note];
+        return ['status' => 'success', 'message' => 'Заметка успешно получена', 'data' => [
+            'note' => $note, 'tags' => $note->getTagNames()
+        ]];
     }
 
     /**
@@ -109,7 +122,14 @@ class NoteController extends Controller
             return ['status' => 'error', 'message' => 'Ошибка в ходе добавлении заметки', 'errors' => $note->errors];
         }
 
-        return ['status' => 'success', 'message' => 'Заметка успешно добавлена.', 'data' => $note];
+        //добавление тэгов
+        foreach ($postData['tags'] as $tagId) {
+            $tag = Tag::findOne(['id' => $tagId]);
+            if ($tag) $note->link('tags', $tag);
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно добавлена.', 'data' => [
+            'note' => $note, 'tags' => $note->getTagNames()]];
     }
 
     /**
@@ -135,7 +155,16 @@ class NoteController extends Controller
             return ['status' => 'error', 'message' => 'Ошибка в ходе сохранения заметки', 'errors' => $note->errors];
         }
 
-        return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => $note];
+        //добавление тэгов
+        $note->unlinkAll('tags', true);
+
+        foreach ($postData['tags'] as $tagId) {
+            $tag = Tag::findOne(['id' => $tagId]);
+            if ($tag) $note->link('tags', $tag);
+        }
+
+        return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => [
+            'note' => $note, 'tags' => $note->getTagNames()]];
     }
 
     /**

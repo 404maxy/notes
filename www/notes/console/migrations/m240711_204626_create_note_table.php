@@ -23,7 +23,7 @@ class m240711_204626_create_note_table extends Migration
         ]);
 
         $this->createIndex(
-            'idx-post-user_id',
+            'idx-note-user_id',
             '{{%note}}',
             'user_id'
         );
@@ -53,7 +53,7 @@ class m240711_204626_create_note_table extends Migration
 
         // drops index for column `author_id`
         $this->dropIndex(
-            'idx-post-user_id',
+            'idx-note-user_id',
             '{{%note}}'
         );
 

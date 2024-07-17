@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property integer $created_at
  * @property integer $updated_at
  * @property bool $is_deleted
+ * @property array $tags
  */
 class Note extends ActiveRecord
 {
@@ -49,5 +50,36 @@ class Note extends ActiveRecord
         ];
     }
 
-    //TODO: добавить связь многие-ко-многим c тегами
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getTags()
+    {
+        return $this->hasMany(Tag::class, ['id' => 'tag_id'])
+            ->viaTable('note_tag', ['note_id' => 'id']);
+    }
+
+    /**
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getTagNames()
+    {
+        return $this->getTags()->select('name')->column();
+    }
+
+    /**
+     * @param $tagId
+     * @return array|ActiveRecord[]
+     */
+    public static function findByTagName($tagId)
+    {
+        return self::find()
+            ->joinWith('tags')
+            ->where(['tag.id' => $tagId])
+            ->all();
+    }
+
 }
