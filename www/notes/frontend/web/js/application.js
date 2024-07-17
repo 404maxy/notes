@@ -176,8 +176,9 @@
      * Регистрация событий
      */
     $(document).ready(function () {
-        $('#add-form-button').click(function () {
+        $('#add-note-button').click(function () {
             notes.form.attr('action', notes.endpoints.create);
+            notes.form[0].reset();
             notes.showForm();
         });
 

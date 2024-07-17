@@ -12,14 +12,21 @@ $this->title = 'Заметки';
 
     <div class="row">
 
-      <div class="col-md-4">
-        <button class="btn btn-success w-100" id="add-form-button">Добавить заметку</button>
+      <div class="col-md-2">
+        <button class="btn btn-success w-100" id="add-tag-button">Добавить тэг</button>
+        <ul id="tags-list" class="list-group pt-1">
+          <li class="list-group-item">Идёт загрузка списка тэгов...</li>
+        </ul>
+      </div>
+
+      <div class="col-md-3">
+        <button class="btn btn-success w-100" id="add-note-button">Добавить заметку</button>
         <ul id="notes-list" class="list-group pt-1">
           <li class="list-group-item">Идёт загрузка списка заметок...</li>
         </ul>
       </div>
 
-      <div class="col-md-8">
+      <div class="col-md-7">
 
         <div id="note">
 
