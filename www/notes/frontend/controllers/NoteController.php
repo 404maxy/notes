@@ -65,8 +65,7 @@ class NoteController extends Controller
             ->where(['user_id' => $userId, 'is_deleted' => false])
             ->orderBy(['created_at' => SORT_DESC]);
 
-        if(isset($getData['tagId']))
-        {
+        if (isset($getData['tagId'])) {
             $tagId = (int)$getData['tagId'];
             $notesCondition->joinWith('tags')
                 ->where(['tag.id' => $tagId]);
@@ -105,6 +104,7 @@ class NoteController extends Controller
      *
      * @return array
      * @throws Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function actionCreate()
     {
@@ -123,10 +123,13 @@ class NoteController extends Controller
         }
 
         //добавление тэгов
-        foreach ($postData['tags'] as $tagId) {
-            $tag = Tag::findOne(['id' => $tagId]);
-            if ($tag) $note->link('tags', $tag);
+        if (isset($postData['tags'])) {
+            foreach ($postData['tags'] as $tagId) {
+                $tag = Tag::findOne(['id' => $tagId]);
+                if ($tag) $note->link('tags', $tag);
+            }
         }
+
 
         return ['status' => 'success', 'message' => 'Заметка успешно добавлена.', 'data' => [
             'note' => $note, 'tags' => $note->getTagNames()]];
@@ -158,9 +161,12 @@ class NoteController extends Controller
         //добавление тэгов
         $note->unlinkAll('tags', true);
 
-        foreach ($postData['tags'] as $tagId) {
-            $tag = Tag::findOne(['id' => $tagId]);
-            if ($tag) $note->link('tags', $tag);
+        //TODO: вынести в отдельный метод, дублирование кода
+        if (isset($postData['tags'])) {
+            foreach ($postData['tags'] as $tagId) {
+                $tag = Tag::findOne(['id' => $tagId]);
+                if ($tag) $note->link('tags', $tag);
+            }
         }
 
         return ['status' => 'success', 'message' => 'Заметка успешно сохранена.', 'data' => [
@@ -189,5 +195,39 @@ class NoteController extends Controller
         $note->delete();
 
         return ['status' => 'success', 'message' => 'Заметка успешно удалена.'];
+    }
+
+    /**
+     * Удаление заметки
+     *
+     * @return array
+     */
+    public function actionSearch()
+    {
+        $userId = Yii::$app->user->id;
+        $postData = Yii::$app->request->post();
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!isset($postData['keywords'])) {
+            return ['status' => 'error', 'message' => 'Введите ключевые слова для поиска.'];
+        }
+
+        //TODO: проверить, безопасно ли передать в таком виде (есть ли валидация из коробки),
+        // или требуется дополнительная валидация на предмет инъекций
+        $keywords = $postData['keywords'];
+
+
+        $notes = Note::find()
+            ->where(['user_id' => $userId, 'is_deleted' => false])
+            ->andFilterWhere(['like', 'body', $keywords])
+            //TODO: для ускорения поиска использовать полнотекстовый индекс см TODO в миграции m240711_204626_create_note_table::class
+            //->andWhere("MATCH(body) AGAINST (:query IN NATURAL LANGUAGE MODE)", ['query' => $keywords]);
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+
+        //TODO: реализовать дополнительную фильтрацию по тэгу
+
+        return ['status' => 'success', 'message' => 'Заметки успешно найдены.', 'data' => $notes ?? []];
     }
 }

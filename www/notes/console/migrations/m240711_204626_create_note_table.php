@@ -39,6 +39,7 @@ class m240711_204626_create_note_table extends Migration
         );
 
         //TODO: для поиска потребуется полнотекстовый индекс
+        //ALTER TABLE note ADD FULLTEXT INDEX idx_fulltext (body);
     }
 
     /**
