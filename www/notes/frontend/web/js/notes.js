@@ -18,6 +18,7 @@
         this.formBody = $('#form-body');
         this.noteTags = $('#note-tags');
         this.select = $('#tags-select');
+        this.searchForm = $('#search-form');
 
         this.currentId = 0;
 
@@ -26,7 +27,8 @@
             "view": "/note/view/",
             "create": "/note/create",
             "delete": "/note/delete/",
-            "update": "/note/update/"
+            "update": "/note/update/",
+            "search": "/note/search"
         };
 
         /**
@@ -195,6 +197,38 @@
             });
         }
 
+        /**
+         * Поиск заметок
+         * TODO: реализовать возможность допольнительной фильтрации по тэгу
+         */
+        this.search = function (callback, tagId) {
+
+            let url = this.endpoints.search;
+            if(typeof tagId !== 'undefined') {
+                url = url + '/?tagId=' + tagId;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: this.searchForm.serialize(),
+                success: function (response) {
+                    if (response.status === 'success') {
+                        this.renderList(response.data);
+                        if(typeof callback === "function") {
+                            callback(response.data);
+                        }
+                    } else {
+                        alert(response.message);
+                        console.log(response.errors);
+                    }
+                }.bind(this),
+                error: function () {
+                    alert('Ошибка в ходе поиска заметок. Обратитесь в поддержку.');
+                }
+            });
+        };
+
     }
 
     window.notes = new Notes();
@@ -251,6 +285,11 @@
         $('#delete-button').click(function(e)
         {
             notes.delete(notes.currentId);
+        });
+
+        $('#search-form').submit(function (e) {
+            e.preventDefault();
+            notes.search();
         });
 
     });

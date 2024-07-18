@@ -2,6 +2,7 @@
 
 use frontend\assets\AppAsset;
 use frontend\assets\NoteAsset;
+
 AppAsset::register($this);
 NoteAsset::register($this);
 
@@ -18,7 +19,8 @@ $this->title = 'Заметки';
 
         <form action="/tag/create" method="post" id="tags-form">
           <div class="input-group">
-            <input type="text" name="name" class="form-control" placeholder="Новый тэг" aria-describedby="button-addon2">
+            <input type="text" name="name" class="form-control" placeholder="Новый тэг"
+                   aria-describedby="button-addon2">
             <button class="btn btn-outline-primary" type="submit" id="button-addon2">+</button>
             <!--TODO: вывести поле с текстом ошибки -->
           </div>
@@ -31,10 +33,22 @@ $this->title = 'Заметки';
       </div>
 
       <div class="col-md-3">
-        <button class="btn btn-success w-100" id="add-note-button">Добавить заметку</button>
-        <ul id="notes-list" class="list-group pt-1">
-          <li class="list-group-item">Загрузка заметок...</li>
-        </ul>
+
+        <form action="/note/search" method="post" id="search-form">
+          <div class="input-group">
+            <input type="text" name="keywords" class="form-control" placeholder="Поиск"
+                   aria-describedby="button-search">
+            <button class="btn btn-outline-primary" type="submit" id="button-search">🔎</button>
+          </div>
+        </form>
+
+        <div class="form-group pt-1">
+          <button class="btn btn-success w-100" id="add-note-button">Добавить заметку</button>
+          <ul id="notes-list" class="list-group pt-1">
+            <li class="list-group-item">Загрузка заметок...</li>
+          </ul>
+        </div>
+
       </div>
 
       <div class="col-md-7">
