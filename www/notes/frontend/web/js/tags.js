@@ -127,12 +127,6 @@
     }
 
     window.tags = new Tags();
-    tags.getAll();
-    // let id = parseInt(window.location.hash.substring(1));
-    // notes.currentId = id > 0 ? id : 0;
-    // notes.get(notes.currentId);
-
-    //TODO: получать идентификатор последней заметки при загрузке без переданного идентификатора заметки
 
     /**
      * Регистрация событий
@@ -148,13 +142,14 @@
             e.preventDefault();
             $('#tags-list>li').removeClass('active');
             $(this).addClass('active');
+            route.tagId =$(this).data('id');
             notes.getAll(function(notesList) {
                 if(typeof notesList[0] !== 'undefined' && typeof notesList[0].id !== 'undefined') {
                     notes.get(notesList[0].id);
                 } else {
                     notes.notes.empty();
                 }
-            }, $(this).data('id'));
+            });
         });
 
         $('#tags-list').on('click', 'li>button', function()

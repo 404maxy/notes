@@ -13,6 +13,8 @@ class NoteAsset extends AssetBundle
     public $baseUrl = '@web';
     public $js = [
         'js/notes.js',
-        'js/tags.js',
+    ];
+    public $jsOptions = [
+        'defer' => true
     ];
 }
