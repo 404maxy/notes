@@ -4,7 +4,7 @@
 
 ## Установка
 
-Занятите репозиторий
+Затяните репозиторий
 
 ```
 git clone https://github.com/404maxy/notes.git

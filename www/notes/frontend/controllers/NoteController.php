@@ -15,6 +15,7 @@ use yii\web\NotFoundHttpException;
 /**
  * Notes controller
  * Доступ возможен только после авторизации пользователя
+ * TODO ТЕХДОЛГ: вынести бизенс-логику в модели
  */
 class NoteController extends Controller
 {
