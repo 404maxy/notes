@@ -42,10 +42,16 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'note/list' => 'note/list',
                 'note/view/<id:\d+>' => 'note/view',
+                'note/create' => 'note/create',
                 'note/update/<id:\d+>' => 'note/update',
                 'note/delete/<id:\d+>' => 'note/delete',
+                'note/search' => 'note/search',
+                'tag/list' => 'tag/list',
+                'tag/create' => 'tag/create',
                 'tag/delete/<id:\d+>' => 'tag/delete',
+                '<url:.*>' => 'note/index'
             ],
         ],
         'authClientCollection' => [

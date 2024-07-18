@@ -7,18 +7,18 @@ use yii\web\AssetBundle;
 /**
  * Main frontend application asset bundle.
  */
-class AppAsset extends AssetBundle
+class RunAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
-    public $css = [
-        'css/site.css',
-    ];
     public $js = [
+        'js/app.js',
     ];
     public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap5\BootstrapAsset',
+        'frontend\assets\AppAsset',
+        'frontend\assets\RouteAsset',
+        'frontend\assets\NoteAsset',
+        'frontend\assets\TagAsset',
     ];
     public $jsOptions = [
         'defer' => true

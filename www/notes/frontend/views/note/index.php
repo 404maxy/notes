@@ -1,10 +1,8 @@
 <?php
 
-use frontend\assets\AppAsset;
-use frontend\assets\NoteAsset;
+use frontend\assets\RunAsset;
 
-AppAsset::register($this);
-NoteAsset::register($this);
+RunAsset::register($this);
 
 $this->title = 'Заметки';
 ?>
@@ -48,6 +46,13 @@ $this->title = 'Заметки';
             <li class="list-group-item">Загрузка заметок...</li>
           </ul>
         </div>
+
+        <nav aria-label="Page navigation example" class="pt-1">
+          <ul class="pagination" id="pagination">
+            <li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>
+            <li class="page-item"><a class="page-link" href="#" data-page="2">2</a></li>
+          </ul>
+        </nav>
 
       </div>
 

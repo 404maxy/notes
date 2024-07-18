@@ -19,6 +19,7 @@
         this.noteTags = $('#note-tags');
         this.select = $('#tags-select');
         this.searchForm = $('#search-form');
+        this.pagination = $('#pagination');
 
         this.currentId = 0;
 
@@ -50,21 +51,17 @@
         /**
          * Получить список заметок
          */
-        this.getAll = function (callback, tagId) {
-
-            let url = this.endpoints.list;
-            if(typeof tagId !== 'undefined') {
-                url = url + '/?tagId=' + tagId;
-            }
+        this.getAll = function (callback) {
 
             $.ajax({
-                url: url,
+                url: this.endpoints.list + route.buildQuery(),
                 type: 'get',
                 success: function (response) {
                     if (response.status === 'success') {
-                        this.renderList(response.data);
+                        this.renderList(response.data.notes);
+                        this.renderPagination(response.data.pagination);
                         if(typeof callback === "function") {
-                            callback(response.data);
+                            callback(response.data.notes);
                         }
                     } else {
                         alert(response.message);
@@ -123,7 +120,7 @@
             this.formTitle.val(title);
             this.formBody.text(body);
 
-            window.history.pushState({"html": body, "pageTitle": title}, "", "#" + id);
+            window.history.pushState({"html": body, "pageTitle": title}, "", id);
         };
 
         /**
@@ -229,24 +226,25 @@
             });
         };
 
+        /**
+         * Отрисовка пагинации
+         */
+        this.renderPagination = function (pagination)
+        {
+            this.pagination.empty();
+            const pagesCount = Math.ceil(pagination.totalCount / pagination.defaultPageSize);
+
+            if(pagesCount < 2) return;
+
+            for(let i = 1; i <= pagesCount; i++) {
+                this.pagination.append('<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>');
+            }
+
+        };
+
     }
 
     window.notes = new Notes();
-    notes.getAll(function(notesList) {
-        if(typeof notesList[0] !== 'undefined' && typeof notesList[0].id !== 'undefined') {
-            notes.get(notesList[0].id);
-        } else {
-            notes.notes.empty();
-        }
-    });
-
-    let id = parseInt(window.location.hash.substring(1));
-
-    if(!isNaN(id)) {
-        notes.get(id);
-    } else {
-        //$('#controls').hide(); //TODO: показать преветственный экран
-    }
 
     /**
      * Регистрация событий
@@ -290,6 +288,12 @@
         $('#search-form').submit(function (e) {
             e.preventDefault();
             notes.search();
+        });
+
+        $('#pagination').on('click', 'li>a', function (e) {
+            e.preventDefault();
+            route.page = $(this).data('page');
+            notes.getAll();
         });
 
     });

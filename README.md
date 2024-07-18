@@ -12,6 +12,7 @@ git clone https://github.com/404maxy/notes.git
 
 Соберите контейнеры
 
+
 ```
 docker compose up -d --build
 ```

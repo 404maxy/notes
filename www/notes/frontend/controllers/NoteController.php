@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use common\models\Note;
 use common\models\Tag;
+use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\web\Response;
 use Yii;
@@ -72,9 +73,21 @@ class NoteController extends Controller
                 ->where(['tag.id' => $tagId]);
         }
 
-        $notes = $notesCondition->all();
+        $pagination = new Pagination([
+            'defaultPageSize' => 5, //TODO: вынести в конфиг
+            'totalCount' => $notesCondition->count(),
+        ]);
 
-        return ['status' => 'success', 'message' => 'Список заметок успешно получен.', 'data' => $notes ?? []];
+        $order = 'created_at DESC'; //TODO: получать сортировку из GET-параметров
+
+        $notes = $notesCondition->orderBy($order)
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)->all();
+
+        return ['status' => 'success', 'message' => 'Список заметок успешно получен.', 'data' => [
+            'notes' => $notes ?? [],
+            'pagination' => $pagination
+        ]];
     }
 
     /**
